@@ -19,6 +19,7 @@ const selector = (state: AppState) => ({
   onNodesChange: state.onNodesChange,
   onNodesLabelChange: state.onNodesLabelChange,
   onEdgesChange: state.onEdgesChange,
+  onEdgesLabelChange: state.onEdgesLabelChange,
   onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
@@ -37,6 +38,7 @@ export const useCreatorsPanel = () => {
     nodes,
     onConnect,
     onEdgesChange,
+    onEdgesLabelChange,
     onNodesChange,
     onNodesLabelChange,
     setNodes,
@@ -92,6 +94,7 @@ export const useCreatorsPanel = () => {
       setEdges(
         edges.concat({
           id,
+          data: { label: 'Edge', onchange: onEdgesLabelChange },
           type: EDGE.CENTER_LABEL,
           source: connectionState.fromNode.id,
           target: id,

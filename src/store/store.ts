@@ -10,6 +10,19 @@ import { type AppState } from './types';
 import { EDGE } from '../enums';
 
 export const useStore = create<AppState>()((set, get) => {
+  const onEdgesLabelChange = (id: string, label: string) => {
+    const updatedEdges = get().edges.map((edge) => {
+      if (edge.id === id) {
+        return {
+          ...edge,
+          data: { ...edge.data, label },
+        };
+      }
+      return edge;
+    });
+    set({ edges: updatedEdges });
+  };
+
   return {
     nodes: [],
     edges: [],
@@ -35,13 +48,14 @@ export const useStore = create<AppState>()((set, get) => {
         edges: applyEdgeChanges(changes, get().edges),
       });
     },
+    onEdgesLabelChange,
     onConnect: (connection) => {
       set({
         edges: addEdge(
           {
             ...connection,
             type: EDGE.CENTER_LABEL,
-            data: { label: 'Edge' },
+            data: { label: 'Edge', onchange: onEdgesLabelChange },
             markerEnd: { type: MarkerType.ArrowClosed },
           },
           get().edges,

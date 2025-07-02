@@ -14,6 +14,7 @@ export type AppState = {
   onNodesChange: OnNodesChange<AppNode>;
   onNodesLabelChange: (id: string, label: string) => void;
   onEdgesChange: OnEdgesChange;
+  onEdgesLabelChange: (id: string, label: string) => void;
   onConnect: OnConnect;
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;

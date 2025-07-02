@@ -19,3 +19,7 @@ body {
 .react-flow__handle {
   @apply !h-6 !rounded-sm !bg-gray-400;
 }
+
+.react-flow__edgelabel-renderer {
+  @apply !pointer-events-auto
+}

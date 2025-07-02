@@ -6,6 +6,7 @@ export const useEditable = () => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleDoubleClick = () => {
+    console.log('double click');
     setIsEditing(true);
   };
 
