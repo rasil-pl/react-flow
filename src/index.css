@@ -1,5 +1,21 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import 'tailwindcss';
+
+body {
+  @apply font-mono;
+}
+
+.react-flow__node:has(:hover, :active, :focus-within) > div {
+  @apply border border-green-500;
+}
+
+.react-flow__node.selected > div {
+  @apply !border-green-500;
+}
+
+.react-flow__edge.selected path {
+  @apply !stroke-green-500;
+}
+
+.react-flow__handle {
+  @apply !h-6 !rounded-sm !bg-gray-400;
 }
