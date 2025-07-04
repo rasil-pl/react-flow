@@ -124,7 +124,7 @@ const createAppState: AppStateCreator = (set, get) => {
     set({ nodes: updatedNodes, edges: updatedEdges });
   };
 
-  const onPaneClick = (_: MouseEvent) => {
+  const onPaneClick = () => {
     const nodes = get().nodes;
     const edges = get().edges;
 

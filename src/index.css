@@ -22,7 +22,7 @@ body {
 
 .react-flow__node:has(~ .react-flow__node.selected),
 .react-flow__node.selected ~ div {
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 body:has(.react-flow__node.selected) .react-flow__edge,
@@ -30,7 +30,7 @@ body:has(.react-flow__node.selected) .react-flow__edgelabel-renderer > div,
 body:has(.react-flow__edge.selected) .react-flow__node > div,
 body:has(.react-flow__edge.selected) .react-flow__edge,
 body:has(.react-flow__edge.selected) .react-flow__edgelabel-renderer > div {
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 .react-flow__node:has(.highlighted),

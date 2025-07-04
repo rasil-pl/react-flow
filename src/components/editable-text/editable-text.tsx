@@ -46,7 +46,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           id={`editable-text-${id}`}
           ref={textareaRef}
           value={data.label || ''}
-          placeholder='Node'
+          placeholder={type}
           className={cn(
             'focus-visible:outline-none text-center resize-none field-sizing-content',
             inputClassName,
@@ -64,9 +64,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
         />
       ) : (
         <div
-          className={cn('text-center break-words whitespace-pre-wrap', {
-            'text-gray-400 italic': !data.label,
-          })}
+          className={cn(
+            'text-center break-words whitespace-pre-wrap select-none',
+            {
+              'text-gray-400 italic': !data.label,
+            },
+          )}
           style={{
             width: containerRef.current
               ? `max(${containerRef.current.clientWidth}px, 200px)`
@@ -74,7 +77,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           }}
           onDoubleClick={handleDoubleClick}
         >
-          {data?.label || 'Node'}
+          {data?.label || type}
         </div>
       )}
     </div>

@@ -9,5 +9,9 @@ export enum NODE {
 }
 
 export enum EDGE {
-  CENTER_LABEL = 'centerLabel',
+  STRAIGHT = 'straight',
+  BEZIER = 'bezier',
+  SIMPLE_BEZIER = 'simpleBezier',
+  SMOOTH_STEP = 'smoothStep',
+  STEP = 'step',
 }

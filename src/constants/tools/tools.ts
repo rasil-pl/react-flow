@@ -1,4 +1,9 @@
-import { CircleIcon, MousePointer2Icon, SquareIcon } from 'lucide-react';
+import {
+  CircleIcon,
+  MousePointer2Icon,
+  MoveUpRightIcon,
+  SquareIcon,
+} from 'lucide-react';
 import { NODE, TOOL } from '../../enums';
 
 export const TOOLS = [
@@ -20,10 +25,10 @@ export const TOOLS = [
     icon: CircleIcon,
     type: NODE.CIRCLE,
   },
-  // {
-  //   id: 'circle',
-  //   label: 'Circle',
-  //   icon: CircleIcon,
-  //   type: NODE.CIRCLE,
-  // },
+  {
+    id: 'straight-edge',
+    lable: 'Straight edge',
+    icon: MoveUpRightIcon,
+    // type:
+  },
 ] as const;

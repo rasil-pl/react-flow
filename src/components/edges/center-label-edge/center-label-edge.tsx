@@ -1,9 +1,4 @@
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  getBezierPath,
-  getSmoothStepPath,
-} from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from '@xyflow/react';
 import type { CenterLabelEdgeProps } from './center-label-edge.types.ts';
 import { EditableText } from '../../editable-text';
 import { cn } from '../../../utils/tw.ts';
@@ -18,6 +13,7 @@ export const CenterLabelEdge: React.FC<CenterLabelEdgeProps> = ({
   targetPosition,
   data,
   markerEnd,
+  selected,
 }) => {
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
@@ -35,10 +31,10 @@ export const CenterLabelEdge: React.FC<CenterLabelEdgeProps> = ({
         path={edgePath}
         markerEnd={markerEnd}
         className={cn({
-          'highlighted !stroke-green-400': data?.highlighted,
+          'highlighted !stroke-green-400': data?.highlighted || selected,
         })}
       />
-      {data?.label && (
+      {data && (
         <EdgeLabelRenderer>
           <div
             style={{
@@ -49,7 +45,7 @@ export const CenterLabelEdge: React.FC<CenterLabelEdgeProps> = ({
             className={cn(
               `absolute nodrag nopan bg-white/80 border border-gray-200 w-fit p-1`,
               {
-                highlighted: data?.highlighted,
+                highlighted: data?.highlighted || selected,
               },
             )}
           >
@@ -57,6 +53,7 @@ export const CenterLabelEdge: React.FC<CenterLabelEdgeProps> = ({
           </div>
         </EdgeLabelRenderer>
       )}
+
       {data?.highlighted && (
         <g>
           {[...Array(10)].map((_, i) => {

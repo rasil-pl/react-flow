@@ -10,7 +10,7 @@ export const BasicNode: React.FC<BasicNodeProps> = ({ id, data, selected }) => {
         className={cn(
           `px-4 py-2 shadow-md rounded-md bg-black/5 border-1 border-gray-400 w-full h-full flex justify-center`,
           {
-            highlighted: data?.highlighted,
+            highlighted: data?.highlighted || selected,
           },
         )}
       >
