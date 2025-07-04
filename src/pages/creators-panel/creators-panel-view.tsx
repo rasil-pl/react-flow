@@ -3,6 +3,7 @@ import type { CreatorsPanelViewProps } from './creators-panel.types';
 import { nodeTypes } from '../../constants/node-types';
 import { Tools } from '../../components/tools';
 import { edgeTypes } from '../../constants/edge-types';
+import { SelectedTool } from '../../components/selected-tool';
 
 export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   nodes,
@@ -10,10 +11,11 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   onNodesChange,
   onEdgesChange,
   onConnect,
-  onDragOver,
-  onDrop,
   isValidConnection,
   onConnectEnd,
+  onNodeClick,
+  onEdgeClick,
+  onPaneClick,
 }) => {
   return (
     <div style={{ height: '100%' }}>
@@ -21,22 +23,26 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
+        onNodeClick={onNodeClick}
         onEdgesChange={onEdgesChange}
+        onEdgeClick={onEdgeClick}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         panOnDrag={false}
+        onPaneClick={onPaneClick}
         selectionOnDrag={true}
         panOnScroll={true}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onlyRenderVisibleElements
-        onDragOver={onDragOver}
-        onDrop={onDrop}
         isValidConnection={isValidConnection}
-        fitView
+        fitView={false}
         fitViewOptions={{ padding: 2 }}
       >
         <Background />
+
+        <SelectedTool />
+
         <Panel position='center-left'>
           <Tools />
         </Panel>

@@ -1,29 +1,26 @@
 import { useShallow } from 'zustand/react/shallow';
 import type { AppState } from '../../store/types';
 import { useStore } from '../../store';
-import {
-  MarkerType,
-  useReactFlow,
-  type Connection,
-  type Edge,
-  type OnConnectEnd,
-} from '@xyflow/react';
+import { MarkerType, useReactFlow, type OnConnectEnd } from '@xyflow/react';
 import { nanoid } from 'nanoid';
 import { useCallback } from 'react';
 import { EDGE, NODE } from '../../enums';
 import { nodeTypes } from '../../constants/node-types';
+import { useToolShortcuts } from '../../hooks/use-tool-shortcuts';
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
   edges: state.edges,
   onNodesChange: state.onNodesChange,
-  onNodesLabelChange: state.onNodesLabelChange,
+  onNodeClick: state.onNodeClick,
   onEdgesChange: state.onEdgesChange,
-  onEdgesLabelChange: state.onEdgesLabelChange,
   onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
   onDragOver: state.onDragOver,
+  isValidConnection: state.isValidConnection,
+  onEdgeClick: state.onEdgeClick,
+  onPaneClick: state.onPaneClick,
 });
 
 const OFFSET = {
@@ -38,13 +35,16 @@ export const useCreatorsPanel = () => {
     nodes,
     onConnect,
     onEdgesChange,
-    onEdgesLabelChange,
     onNodesChange,
-    onNodesLabelChange,
+    onNodeClick,
     setNodes,
     setEdges,
     onDragOver,
+    isValidConnection,
+    onEdgeClick,
+    onPaneClick,
   } = useStore(useShallow(selector));
+  useToolShortcuts();
 
   const onDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -68,11 +68,11 @@ export const useCreatorsPanel = () => {
         id: nanoid(),
         type: nodeType as NODE,
         position,
-        data: { label: 'Node', onchange: onNodesLabelChange },
+        data: { label: 'Node' },
       };
       setNodes(nodes.concat(node));
     },
-    [nodes, onNodesLabelChange, screenToFlowPosition, setNodes],
+    [nodes, screenToFlowPosition, setNodes],
   );
 
   const onConnectEnd: OnConnectEnd = (event, connectionState) => {
@@ -88,25 +88,20 @@ export const useCreatorsPanel = () => {
           x: clientX,
           y: clientY,
         }),
-        data: { label: 'Node', onchange: onNodesLabelChange },
+        data: { label: 'Node' },
       };
       setNodes(nodes.concat(newNode));
       setEdges(
         edges.concat({
           id,
-          data: { label: 'Edge', onchange: onEdgesLabelChange },
+          data: { label: 'Edge' },
           type: EDGE.CENTER_LABEL,
           source: connectionState.fromNode.id,
           target: id,
-          markerEnd: { type: MarkerType.ArrowClosed },
+          markerEnd: { type: MarkerType.ArrowClosed, height: 40, width: 20 },
         }),
       );
     }
-  };
-
-  const isValidConnection = (connection: Edge | Connection) => {
-    const { source, target } = connection;
-    return source !== target;
   };
 
   return {
@@ -119,5 +114,8 @@ export const useCreatorsPanel = () => {
     onDragOver,
     isValidConnection,
     onConnectEnd,
+    onNodeClick,
+    onEdgeClick,
+    onPaneClick,
   };
 };

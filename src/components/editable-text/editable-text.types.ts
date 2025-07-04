@@ -1,5 +1,6 @@
 export type EditableTextProps = {
   id: string;
-  data: { label: string; onchange: (id: string, val: string) => void };
+  data: { label: string };
+  type: 'node' | 'edge';
   inputClassName?: string;
 };

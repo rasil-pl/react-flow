@@ -5,15 +5,24 @@ import { useStore } from '../../store';
 import { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { NODE } from '../../enums';
+import { useToolsStore, type ToolsState } from '../../store/tools-store';
 
 const selector = (state: AppState) => ({
   setNodes: state.setNodes,
   onNodesLabelChange: state.onNodesLabelChange,
 });
 
+const toolsSelector = (state: ToolsState) => ({
+  selectedTool: state.selectedTool,
+  setSelectedTool: state.setSelectedTool,
+});
+
 export const useTools = () => {
   const { getNodes } = useReactFlow();
-  const { setNodes, onNodesLabelChange } = useStore(useShallow(selector));
+  const { setNodes } = useStore(useShallow(selector));
+  const { selectedTool, setSelectedTool } = useToolsStore(
+    useShallow(toolsSelector),
+  );
 
   const addNode = useCallback(() => {
     const updatedNodes = [
@@ -22,11 +31,11 @@ export const useTools = () => {
         id: nanoid(),
         type: NODE.BASIC,
         position: { x: 0, y: 0 },
-        data: { label: 'Node', onchange: onNodesLabelChange },
+        data: { label: 'Node' },
       },
     ];
     setNodes(updatedNodes);
-  }, [setNodes, getNodes, onNodesLabelChange]);
+  }, [setNodes, getNodes]);
 
   const handleDragStart = (
     event: React.DragEvent<HTMLButtonElement>,
@@ -36,5 +45,5 @@ export const useTools = () => {
     event.dataTransfer.setData('nodeType', type);
   };
 
-  return { addNode, handleDragStart };
+  return { addNode, handleDragStart, selectedTool, setSelectedTool };
 };

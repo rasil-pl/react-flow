@@ -1,12 +1,22 @@
-import { Handle, Position } from '@xyflow/react';
+import { Handle, NodeResizer, Position } from '@xyflow/react';
 import type { CircleNodeProps } from './circle-node.types';
 import { EditableText } from '../../editable-text';
 
-export const CircleNode: React.FC<CircleNodeProps> = ({ id, data }) => {
+export const CircleNode: React.FC<CircleNodeProps> = ({
+  id,
+  data,
+  selected,
+}) => {
   return (
     <>
-      <div className='min-w-[100px] min-h-[100px] w-full h-full rounded-full border border-gray-400 bg-black/5 flex justify-center'>
-        <EditableText id={id} data={data} />
+      <div className='w-full aspect-square rounded-full border border-gray-400 bg-black/5 flex justify-center'>
+        <NodeResizer
+          minWidth={50}
+          minHeight={50}
+          isVisible={selected}
+          keepAspectRatio={true}
+        />
+        <EditableText type='node' id={id} data={data} />
       </div>
       <Handle
         type='target'

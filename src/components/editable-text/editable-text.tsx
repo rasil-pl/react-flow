@@ -1,20 +1,41 @@
+import { useShallow } from 'zustand/shallow';
 import { useEditable } from '../../hooks/use-editable';
+import { useStore } from '../../store';
 import { cn } from '../../utils/tw';
 import type { EditableTextProps } from './editable-text.types';
 import { useRef } from 'react';
+import type { AppState } from '../../store/types';
+
+const selector = (state: AppState) => ({
+  onNodesLabelChange: state.onNodesLabelChange,
+  onEdgesLabelChange: state.onEdgesLabelChange,
+});
 
 export const EditableText: React.FC<EditableTextProps> = ({
   id,
   data,
+  type,
   inputClassName,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { textareaRef, isEditing, handleBlur, handleDoubleClick } =
-    useEditable();
+  const { onEdgesLabelChange, onNodesLabelChange } = useStore(
+    useShallow(selector),
+  );
+  const {
+    textareaRef,
+    isEditing,
+    handleBlur,
+    handleDoubleClick,
+    handleKeyDown,
+  } = useEditable();
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (data.onchange) {
-      data.onchange(id, event.target.value);
+    if (type === 'edge') {
+      onEdgesLabelChange(id, event.target.value);
+    } else if (type === 'node') {
+      onNodesLabelChange(id, event.target.value);
+    } else {
+      console.error('Type not specified');
     }
   };
 
@@ -32,6 +53,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           )}
           onChange={handleChange}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           autoComplete='off'
           rows={1}
           style={{
@@ -52,7 +74,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
           }}
           onDoubleClick={handleDoubleClick}
         >
-          {data.label || 'Node'}
+          {data?.label || 'Node'}
         </div>
       )}
     </div>

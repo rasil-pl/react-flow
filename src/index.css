@@ -20,6 +20,34 @@ body {
   @apply !h-6 !rounded-sm !bg-gray-400;
 }
 
-.react-flow__edgelabel-renderer {
-  @apply !pointer-events-auto
+.react-flow__node:has(~ .react-flow__node.selected),
+.react-flow__node.selected ~ div {
+  opacity: 0.3;
+}
+
+body:has(.react-flow__node.selected) .react-flow__edge,
+body:has(.react-flow__node.selected) .react-flow__edgelabel-renderer > div,
+body:has(.react-flow__edge.selected) .react-flow__node > div,
+body:has(.react-flow__edge.selected) .react-flow__edge,
+body:has(.react-flow__edge.selected) .react-flow__edgelabel-renderer > div {
+  opacity: 0.3;
+}
+
+.react-flow__node:has(.highlighted),
+.react-flow__edge:has(.highlighted),
+.highlighted {
+  opacity: 1 !important;
+}
+
+.tool-overlay {
+  pointer-events: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  height: 100%;
+  width: 100%;
+  transform-origin: top left;
+  cursor: crosshair;
+  touch-action: none;
 }

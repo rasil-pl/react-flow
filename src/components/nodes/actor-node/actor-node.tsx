@@ -13,6 +13,7 @@ export const ActorNode: React.FC<ActorNodeProps> = ({ id, data }) => {
           </div>
           <div className='flex-1 w-full'>
             <EditableText
+              type='node'
               id={id}
               data={data}
               inputClassName='text-start w-[200px]'
