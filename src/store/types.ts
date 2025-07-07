@@ -3,26 +3,41 @@ import {
   type Node,
   type OnNodesChange,
   type OnEdgesChange,
-  type OnConnect,
   type IsValidConnection,
 } from '@xyflow/react';
-import type { MouseEvent } from 'react';
+import type { ToolType } from '../components/tools/tools.types';
 
 export type AppNode = Node;
 
 export type AppState = {
   nodes: AppNode[];
+  getNodes: () => AppNode[];
   edges: Edge[];
+  getEdges: () => Edge[];
   onNodesChange: OnNodesChange<AppNode>;
-  onNodeClick: (event: MouseEvent, node: AppNode) => void;
   onNodesLabelChange: (id: string, label: string) => void;
   onEdgesChange: OnEdgesChange;
-  onEdgeClick: (event: MouseEvent, edge: Edge) => void;
   onEdgesLabelChange: (id: string, label: string) => void;
-  onConnect: OnConnect;
   setNodes: (nodes: AppNode[]) => void;
   setEdges: (edges: Edge[]) => void;
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   isValidConnection: IsValidConnection;
-  onPaneClick: (event: MouseEvent) => void;
+};
+
+export type ToolsState = {
+  selectedTool: ToolType | null;
+  setSelectedTool: (tool: ToolType | null) => void;
+  getSelectedTool: () => ToolType | null;
+};
+
+export type Entity =
+  | {
+      type: 'NODE';
+      detail: Node;
+    }
+  | { type: 'EDGE'; detail: Edge };
+
+export type EntityDetailState = {
+  selectedEntity: Entity | null;
+  setSelectedEntity: (entity: Entity | null) => void;
 };

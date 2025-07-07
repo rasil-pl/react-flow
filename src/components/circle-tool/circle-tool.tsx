@@ -1,8 +1,8 @@
 import { useReactFlow, type XYPosition } from '@xyflow/react';
 import { useState, type PointerEvent } from 'react';
-import { useToolsStore, type ToolsState } from '../../store/tools-store';
+import { useToolsStore } from '../../store/tools-store';
 import { useShallow } from 'zustand/shallow';
-import type { AppState } from '../../store/types';
+import type { AppState, ToolsState } from '../../store/types';
 import { useStore } from '../../store';
 import { nanoid } from 'nanoid';
 import { NODE, TOOL } from '../../enums';

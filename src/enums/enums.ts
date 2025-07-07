@@ -1,5 +1,6 @@
 export enum TOOL {
   MOVE = 'move',
+  HAND = 'hand',
 }
 
 export enum NODE {
@@ -11,7 +12,5 @@ export enum NODE {
 export enum EDGE {
   STRAIGHT = 'straight',
   BEZIER = 'bezier',
-  SIMPLE_BEZIER = 'simpleBezier',
   SMOOTH_STEP = 'smoothStep',
-  STEP = 'step',
 }

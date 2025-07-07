@@ -3,9 +3,9 @@ import { useState, type PointerEvent } from 'react';
 import { useReactFlow, type XYPosition } from '@xyflow/react';
 import { useStore } from '../../store';
 import { useShallow } from 'zustand/react/shallow';
-import type { AppState } from '../../store/types.ts';
+import type { AppState, ToolsState } from '../../store/types';
 import { NODE, TOOL } from '../../enums';
-import { useToolsStore, type ToolsState } from '../../store/tools-store.ts';
+import { useToolsStore } from '../../store/tools-store.ts';
 
 type Pos = {
   start: XYPosition | null;

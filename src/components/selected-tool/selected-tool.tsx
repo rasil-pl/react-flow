@@ -1,7 +1,8 @@
 import type { JSX } from 'react';
 import { NODE } from '../../enums';
 import { RectangleTool } from '../rectangle-tool';
-import { useToolsStore, type ToolsState } from '../../store/tools-store';
+import type { ToolsState } from '../../store/types';
+import { useToolsStore } from '../../store/tools-store';
 import { useShallow } from 'zustand/shallow';
 import { CircleTool } from '../circle-tool';
 

@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
-import type { AppState } from '../../store/types';
+import type { AppState, ToolsState } from '../../store/types';
 import { useStore } from '../../store';
 import { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { NODE } from '../../enums';
-import { useToolsStore, type ToolsState } from '../../store/tools-store';
+import { useToolsStore } from '../../store/tools-store';
 
 const selector = (state: AppState) => ({
   setNodes: state.setNodes,

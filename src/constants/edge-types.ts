@@ -1,6 +1,6 @@
 import { ConnectionLineType } from '@xyflow/react';
-import { EdgeController } from '../../components/edge-controller';
-import { EDGE } from '../../enums';
+import { EDGE } from '../enums';
+import { EdgeController } from '../components/edge-controller';
 
 export const edgeTypes = {
   [EDGE.STRAIGHT]: EdgeController(ConnectionLineType.Straight),

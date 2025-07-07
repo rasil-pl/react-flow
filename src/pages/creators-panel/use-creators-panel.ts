@@ -1,26 +1,48 @@
 import { useShallow } from 'zustand/react/shallow';
-import type { AppState } from '../../store/types';
+import type {
+  AppNode,
+  AppState,
+  EntityDetailState,
+  ToolsState,
+} from '../../store/types';
 import { useStore } from '../../store';
-import { MarkerType, useReactFlow, type OnConnectEnd } from '@xyflow/react';
+import {
+  addEdge,
+  MarkerType,
+  useReactFlow,
+  type Connection,
+  type Edge,
+  type OnConnectEnd,
+  type ReactFlowProps,
+} from '@xyflow/react';
 import { nanoid } from 'nanoid';
-import { useCallback } from 'react';
-import { EDGE, NODE } from '../../enums';
+import { useCallback, useMemo, type MouseEvent } from 'react';
+import { EDGE, NODE, TOOL } from '../../enums';
 import { nodeTypes } from '../../constants/node-types';
 import { useToolShortcuts } from '../../hooks/use-tool-shortcuts';
+import { useToolsStore } from '../../store/tools-store';
+import { useEntityDetailStore } from '../../store/entity-detail-store';
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
+  getNodes: state.getNodes,
   edges: state.edges,
+  getEdges: state.getEdges,
   onNodesChange: state.onNodesChange,
-  onNodeClick: state.onNodeClick,
   onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
   onDragOver: state.onDragOver,
   isValidConnection: state.isValidConnection,
-  onEdgeClick: state.onEdgeClick,
-  onPaneClick: state.onPaneClick,
+});
+
+const toolSelector = (state: ToolsState) => ({
+  selectedTool: state.selectedTool,
+});
+
+const entityDetailSelector = (state: EntityDetailState) => ({
+  selectedEntity: state.selectedEntity,
+  setSelectedEntity: state.setSelectedEntity,
 });
 
 const OFFSET = {
@@ -32,19 +54,24 @@ export const useCreatorsPanel = () => {
   const { screenToFlowPosition } = useReactFlow();
   const {
     edges,
+    getEdges,
     nodes,
-    onConnect,
+    getNodes,
     onEdgesChange,
     onNodesChange,
-    onNodeClick,
     setNodes,
     setEdges,
     onDragOver,
     isValidConnection,
-    onEdgeClick,
-    onPaneClick,
   } = useStore(useShallow(selector));
+  const { selectedTool } = useToolsStore(useShallow(toolSelector));
+  const { selectedEntity, setSelectedEntity } = useEntityDetailStore(
+    useShallow(entityDetailSelector),
+  );
+
   useToolShortcuts();
+
+  const selectedToolType = selectedTool ?? EDGE.BEZIER;
 
   const onDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -75,34 +102,160 @@ export const useCreatorsPanel = () => {
     [nodes, screenToFlowPosition, setNodes],
   );
 
-  const onConnectEnd: OnConnectEnd = (event, connectionState) => {
-    if (!connectionState.fromNode?.id) return;
-    if (!connectionState.isValid) {
-      const { clientX, clientY } =
-        'changedTouches' in event ? event.changedTouches[0] : event;
-      const id = nanoid();
-      const newNode = {
-        id,
-        type: NODE.BASIC,
-        position: screenToFlowPosition({
-          x: clientX,
-          y: clientY,
-        }),
-        data: { label: 'Node' },
-      };
-      setNodes(nodes.concat(newNode));
+  const onConnect = useCallback(
+    (connection: Connection) => {
       setEdges(
-        edges.concat({
-          id,
-          data: { label: 'Edge' },
-          type: EDGE.CENTER_LABEL,
-          source: connectionState.fromNode.id,
-          target: id,
-          markerEnd: { type: MarkerType.ArrowClosed, height: 40, width: 20 },
-        }),
+        addEdge(
+          {
+            ...connection,
+            type: selectedToolType,
+            data: { label: 'Edge' },
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              height: 40,
+              width: 20,
+            },
+          },
+          edges,
+        ),
       );
+    },
+    [edges, selectedToolType, setEdges],
+  );
+
+  const onConnectEnd: OnConnectEnd = useCallback(
+    (event, connectionState) => {
+      if (!connectionState.fromNode?.id) return;
+      if (!connectionState.isValid) {
+        const { clientX, clientY } =
+          'changedTouches' in event ? event.changedTouches[0] : event;
+        const id = nanoid();
+        const newNode = {
+          id,
+          type: NODE.BASIC,
+          position: screenToFlowPosition({
+            x: clientX,
+            y: clientY,
+          }),
+          data: { label: 'Node' },
+        };
+        setNodes(nodes.concat(newNode));
+        setEdges(
+          edges.concat({
+            id,
+            data: { label: 'Edge' },
+            type: selectedToolType,
+            source: connectionState.fromNode.id,
+            target: id,
+            markerEnd: { type: MarkerType.ArrowClosed, height: 40, width: 20 },
+          }),
+        );
+      }
+    },
+    [edges, nodes, screenToFlowPosition, selectedToolType, setEdges, setNodes],
+  );
+
+  const onNodeClick = useCallback(
+    (_: MouseEvent, node: AppNode) => {
+      const nodes = getNodes();
+      const edges = getEdges();
+
+      const outgoingEdges = edges.filter((edge) => edge.source === node.id);
+      const targetNodes = outgoingEdges.map((edge) =>
+        nodes.find((node) => node.id === edge.target),
+      );
+      const incomingEdges = edges.filter((edge) => edge.target === node.id);
+      const sourceNodes = incomingEdges.map((edge) =>
+        nodes.find((node) => node.id === edge.source),
+      );
+      const connectedNodes = [...sourceNodes, ...targetNodes];
+      const connectedEdges = [...incomingEdges, ...outgoingEdges];
+      const connectedNodeIds = new Set(
+        connectedNodes.map((node) => (node ? node.id : null)).filter(Boolean),
+      );
+      const connectedEdgeIds = new Set(
+        connectedEdges.map((edge) => (edge ? edge.id : null)).filter(Boolean),
+      );
+      const updatedNodes = nodes.map((node) => ({
+        ...node,
+        data: { ...node.data, highlighted: connectedNodeIds.has(node.id) },
+      }));
+      const updatedEdges = edges.map((edge) => ({
+        ...edge,
+        data: { ...edge.data, highlighted: connectedEdgeIds.has(edge.id) },
+      }));
+      console.log({ updatedNodes, updatedEdges });
+      setNodes(updatedNodes);
+      setEdges(updatedEdges);
+      setSelectedEntity({ type: 'NODE', detail: node });
+    },
+    [getEdges, getNodes, setEdges, setNodes, setSelectedEntity],
+  );
+
+  const onEdgeClick = useCallback(
+    (_: MouseEvent, edge: Edge) => {
+      const nodes = getNodes();
+      const edges = getEdges();
+
+      const sourceNodeId = edge.source;
+      const targetNodeId = edge.target;
+
+      const updatedNodes = nodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          highlighted: node.id === sourceNodeId || node.id === targetNodeId,
+        },
+      }));
+      const updatedEdges = edges.map((e) => ({
+        ...e,
+        data: { ...e.data, highlighted: e.id === edge.id },
+      }));
+
+      setNodes(updatedNodes);
+      setEdges(updatedEdges);
+      setSelectedEntity({ type: 'EDGE', detail: edge });
+    },
+    [getEdges, getNodes, setEdges, setNodes, setSelectedEntity],
+  );
+
+  const onPaneClick = useCallback(() => {
+    const nodes = getNodes();
+    const edges = getEdges();
+
+    const updatedNodes = nodes.map((node) => ({
+      ...node,
+      data: { ...node.data, highlighted: false },
+    }));
+    const updatedEdges = edges.map((edge) => ({
+      ...edge,
+      data: { ...edge.data, highlighted: false },
+    }));
+
+    setEdges(updatedEdges);
+    setNodes(updatedNodes);
+    setSelectedEntity(null);
+  }, [getEdges, getNodes, setEdges, setNodes, setSelectedEntity]);
+
+  const options = useMemo(() => {
+    if (selectedTool === TOOL.MOVE) {
+      return {
+        selectionOnDrag: true,
+        panOnDrag: false,
+        panOnScroll: false,
+        zoomOnScroll: false,
+        nodesDraggable: true,
+      } as Partial<ReactFlowProps>;
+    } else if (selectedTool === TOOL.HAND) {
+      return {
+        selectionOnDrag: false,
+        panOnDrag: true,
+        panOnScroll: false,
+        zoomOnScroll: true,
+        nodesDraggable: false,
+      } as Partial<ReactFlowProps>;
     }
-  };
+  }, [selectedTool]);
 
   return {
     nodes,
@@ -117,5 +270,7 @@ export const useCreatorsPanel = () => {
     onNodeClick,
     onEdgeClick,
     onPaneClick,
+    options,
+    selectedEntity,
   };
 };

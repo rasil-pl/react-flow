@@ -1,18 +1,13 @@
 import {
   CircleIcon,
-  MousePointer2Icon,
+  CornerUpRightIcon,
   MoveUpRightIcon,
+  SplineIcon,
   SquareIcon,
 } from 'lucide-react';
-import { NODE, TOOL } from '../../enums';
+import { EDGE, NODE } from '../enums';
 
 export const TOOLS = [
-  {
-    id: 'move',
-    label: 'Move',
-    icon: MousePointer2Icon,
-    type: TOOL.MOVE,
-  },
   {
     id: 'square',
     label: 'Basic',
@@ -29,6 +24,18 @@ export const TOOLS = [
     id: 'straight-edge',
     lable: 'Straight edge',
     icon: MoveUpRightIcon,
-    // type:
+    type: EDGE.STRAIGHT,
+  },
+  {
+    id: 'smooth-step',
+    lable: 'Smooth Step',
+    icon: CornerUpRightIcon,
+    type: EDGE.SMOOTH_STEP,
+  },
+  {
+    id: 'bezier',
+    lable: 'Bezier',
+    icon: SplineIcon,
+    type: EDGE.BEZIER,
   },
 ] as const;

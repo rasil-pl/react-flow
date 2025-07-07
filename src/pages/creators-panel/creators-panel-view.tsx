@@ -4,6 +4,8 @@ import { nodeTypes } from '../../constants/node-types';
 import { Tools } from '../../components/tools';
 import { edgeTypes } from '../../constants/edge-types';
 import { SelectedTool } from '../../components/selected-tool';
+import { Toolbar } from '../../components/toolbar';
+import { InspectorPanel } from '../../components/inspector-panel';
 
 export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   nodes,
@@ -16,6 +18,8 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   onNodeClick,
   onEdgeClick,
   onPaneClick,
+  options,
+  selectedEntity,
 }) => {
   return (
     <div style={{ height: '100%' }}>
@@ -28,16 +32,17 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
         onEdgeClick={onEdgeClick}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        panOnDrag={false}
         onPaneClick={onPaneClick}
-        selectionOnDrag={true}
-        panOnScroll={true}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onlyRenderVisibleElements
         isValidConnection={isValidConnection}
         fitView={false}
         fitViewOptions={{ padding: 2 }}
+        panOnDrag={false}
+        selectionOnDrag={true}
+        panOnScroll={true}
+        {...options}
       >
         <Background />
 
@@ -45,6 +50,14 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
 
         <Panel position='center-left'>
           <Tools />
+        </Panel>
+
+        <Panel position='bottom-center'>
+          <Toolbar />
+        </Panel>
+
+        <Panel position='center-right'>
+          <InspectorPanel entity={selectedEntity} />
         </Panel>
         <Controls />
       </ReactFlow>

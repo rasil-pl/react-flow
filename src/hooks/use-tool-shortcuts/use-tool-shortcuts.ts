@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { useToolsStore, type ToolsState } from '../../store/tools-store';
+import { useToolsStore } from '../../store/tools-store';
 import { useShallow } from 'zustand/shallow';
 import { NODE, TOOL } from '../../enums';
+import type { ToolsState } from '../../store/types';
 
 const selector = (state: ToolsState) => ({
   setSelectedTool: state.setSelectedTool,
@@ -26,6 +27,9 @@ export const useToolShortcuts = () => {
         case 'escape':
         case 'm': // Move tool
           setSelectedTool(TOOL.MOVE);
+          break;
+        case 'h':
+          setSelectedTool(TOOL.HAND);
           break;
         case 'r': // Move tool
           setSelectedTool(NODE.BASIC);
