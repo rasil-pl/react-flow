@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { useShallow } from 'zustand/react/shallow';
-import type { AppState, ToolsState } from '../../store/types';
+import type { AppNode, AppState, ToolsState } from '../../store/types';
 import { useStore } from '../../store';
 import { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
@@ -18,7 +18,7 @@ const toolsSelector = (state: ToolsState) => ({
 });
 
 export const useTools = () => {
-  const { getNodes } = useReactFlow();
+  const { getNodes, screenToFlowPosition } = useReactFlow();
   const { setNodes } = useStore(useShallow(selector));
   const { selectedTool, setSelectedTool } = useToolsStore(
     useShallow(toolsSelector),
@@ -30,12 +30,16 @@ export const useTools = () => {
       {
         id: nanoid(),
         type: NODE.BASIC,
-        position: { x: 0, y: 0 },
-        data: { label: 'Node' },
-      },
+        position: screenToFlowPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        }),
+        data: { isEditing: true },
+        selected: true,
+      } as AppNode,
     ];
     setNodes(updatedNodes);
-  }, [setNodes, getNodes]);
+  }, [setNodes, getNodes, screenToFlowPosition]);
 
   const handleDragStart = (
     event: React.DragEvent<HTMLButtonElement>,

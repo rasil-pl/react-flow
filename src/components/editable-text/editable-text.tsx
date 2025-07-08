@@ -5,6 +5,7 @@ import { cn } from '../../utils/tw';
 import type { EditableTextProps } from './editable-text.types';
 import { useRef } from 'react';
 import type { AppState } from '../../store/types';
+import { PlusIcon } from 'lucide-react';
 
 const selector = (state: AppState) => ({
   onNodesLabelChange: state.onNodesLabelChange,
@@ -21,13 +22,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
   const { onEdgesLabelChange, onNodesLabelChange } = useStore(
     useShallow(selector),
   );
-  const {
-    textareaRef,
-    isEditing,
-    handleBlur,
-    handleDoubleClick,
-    handleKeyDown,
-  } = useEditable();
+  const { textareaRef, handleBlur, handleDoubleClick, handleKeyDown } =
+    useEditable({ type, id, data });
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (type === 'edge') {
@@ -41,7 +37,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
   return (
     <div ref={containerRef} className='flex justify-center items-center'>
-      {isEditing ? (
+      {data?.isEditing ? (
         <textarea
           id={`editable-text-${id}`}
           ref={textareaRef}
@@ -60,10 +56,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
             width: containerRef.current
               ? containerRef.current.clientWidth
               : '100%',
+            minWidth: '200px',
           }}
         />
-      ) : (
+      ) : data?.label || type === 'node' ? (
         <div
+          id={`${type}-${id}`}
           className={cn(
             'text-center break-words whitespace-pre-wrap select-none',
             {
@@ -71,14 +69,19 @@ export const EditableText: React.FC<EditableTextProps> = ({
             },
           )}
           style={{
-            width: containerRef.current
-              ? `max(${containerRef.current.clientWidth}px, 200px)`
-              : '100%',
+            width:
+              type === 'node' && containerRef.current
+                ? `max(${containerRef.current.clientWidth}px, 200px)`
+                : '100%',
           }}
           onDoubleClick={handleDoubleClick}
         >
-          {data?.label || type}
+          {data.label || type}
         </div>
+      ) : (
+        <button onClick={handleDoubleClick}>
+          <PlusIcon size={16} color='gray' />
+        </button>
       )}
     </div>
   );

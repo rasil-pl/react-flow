@@ -72,7 +72,7 @@ export const RectangleTool = () => {
         type: NODE.BASIC,
         position,
         ...dimension,
-        data: {},
+        data: { isEditing: true },
       },
     ]);
     setSelectedTool(TOOL.MOVE);

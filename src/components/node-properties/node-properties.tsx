@@ -19,11 +19,11 @@ export const NodeProperties = ({ node }: { node: AppNode }) => {
         </div>
         <div>
           <label htmlFor={`w-${node.id}`}>Width:&nbsp;</label>
-          <span id={`w-${node.id}`}>{node.width}</span>
+          <span id={`w-${node.id}`}>{node.width?.toFixed(2)}</span>
         </div>
         <div>
           <label htmlFor={`h-${node.id}`}>Height:&nbsp;</label>
-          <span id={`h-${node.id}`}>{node.height}</span>
+          <span id={`h-${node.id}`}>{node.height?.toFixed(2)}</span>
         </div>
       </div>
 

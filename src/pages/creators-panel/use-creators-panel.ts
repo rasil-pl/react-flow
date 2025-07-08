@@ -7,10 +7,9 @@ import type {
 } from '../../store/types';
 import { useStore } from '../../store';
 import {
-  addEdge,
   MarkerType,
+  Position,
   useReactFlow,
-  type Connection,
   type Edge,
   type OnConnectEnd,
   type ReactFlowProps,
@@ -22,6 +21,18 @@ import { nodeTypes } from '../../constants/node-types';
 import { useToolShortcuts } from '../../hooks/use-tool-shortcuts';
 import { useToolsStore } from '../../store/tools-store';
 import { useEntityDetailStore } from '../../store/entity-detail-store';
+import type { ToolType } from '../../components/tools/tools.types';
+import { generateId } from '../../utils/utils';
+
+const isEdgeType = (value: ToolType): value is EDGE =>
+  Object.values(EDGE).includes(value as EDGE);
+
+const mirrorPosition = (position: Position) => {
+  if (position === Position.Bottom) return Position.Top;
+  if (position === Position.Top) return Position.Bottom;
+  if (position === Position.Left) return Position.Right;
+  if (position === Position.Right) return Position.Left;
+};
 
 const selector = (state: AppState) => ({
   nodes: state.nodes,
@@ -71,8 +82,6 @@ export const useCreatorsPanel = () => {
 
   useToolShortcuts();
 
-  const selectedToolType = selectedTool ?? EDGE.BEZIER;
-
   const onDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
       const nodeType = event.dataTransfer.getData('nodeType');
@@ -95,41 +104,22 @@ export const useCreatorsPanel = () => {
         id: nanoid(),
         type: nodeType as NODE,
         position,
-        data: { label: 'Node' },
-      };
+        data: { isEditing: true },
+        selected: true,
+      } as AppNode;
       setNodes(nodes.concat(node));
     },
     [nodes, screenToFlowPosition, setNodes],
   );
 
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      setEdges(
-        addEdge(
-          {
-            ...connection,
-            type: selectedToolType,
-            data: { label: 'Edge' },
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              height: 40,
-              width: 20,
-            },
-          },
-          edges,
-        ),
-      );
-    },
-    [edges, selectedToolType, setEdges],
-  );
-
   const onConnectEnd: OnConnectEnd = useCallback(
     (event, connectionState) => {
+      console.log({ connectionState });
       if (!connectionState.fromNode?.id) return;
       if (!connectionState.isValid) {
         const { clientX, clientY } =
           'changedTouches' in event ? event.changedTouches[0] : event;
-        const id = nanoid();
+        const id = generateId();
         const newNode = {
           id,
           type: NODE.BASIC,
@@ -137,22 +127,46 @@ export const useCreatorsPanel = () => {
             x: clientX,
             y: clientY,
           }),
-          data: { label: 'Node' },
+          data: { isEditing: true },
         };
         setNodes(nodes.concat(newNode));
         setEdges(
           edges.concat({
-            id,
-            data: { label: 'Edge' },
-            type: selectedToolType,
+            id: `e${connectionState.fromNode?.id}-${id}`,
+            data: {},
+            type:
+              selectedTool && isEdgeType(selectedTool)
+                ? selectedTool
+                : EDGE.BEZIER,
             source: connectionState.fromNode.id,
+            sourceHandle: connectionState.fromHandle?.id,
             target: id,
-            markerEnd: { type: MarkerType.ArrowClosed, height: 40, width: 20 },
-          }),
+            targetHandle: connectionState.fromPosition
+              ? `${id}-${mirrorPosition(connectionState.fromPosition)}`
+              : null,
+            markerEnd: { type: MarkerType.ArrowClosed, height: 60, width: 40 },
+          } as Edge),
+        );
+      } else {
+        if (!connectionState.toNode?.id) return;
+        setEdges(
+          edges.concat({
+            id: `e${connectionState.fromNode.id}-${connectionState.toNode.id}`,
+            data: {},
+            type:
+              selectedTool && isEdgeType(selectedTool)
+                ? selectedTool
+                : EDGE.BEZIER,
+            source: connectionState.fromNode.id,
+            sourceHandle: connectionState.fromHandle?.id,
+            target: connectionState.toNode.id,
+            targetHandle: connectionState.toHandle?.id,
+            markerEnd: { type: MarkerType.ArrowClosed, height: 60, width: 40 },
+          } as Edge),
         );
       }
     },
-    [edges, nodes, screenToFlowPosition, selectedToolType, setEdges, setNodes],
+    [edges, nodes, screenToFlowPosition, setEdges, setNodes, selectedTool],
   );
 
   const onNodeClick = useCallback(
@@ -262,7 +276,6 @@ export const useCreatorsPanel = () => {
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
     onDrop,
     onDragOver,
     isValidConnection,

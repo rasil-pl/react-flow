@@ -12,7 +12,6 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   edges,
   onNodesChange,
   onEdgesChange,
-  onConnect,
   isValidConnection,
   onConnectEnd,
   onNodeClick,
@@ -20,6 +19,8 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
   onPaneClick,
   options,
   selectedEntity,
+  onDragOver,
+  onDrop,
 }) => {
   return (
     <div style={{ height: '100%' }}>
@@ -30,7 +31,6 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
         onNodeClick={onNodeClick}
         onEdgesChange={onEdgesChange}
         onEdgeClick={onEdgeClick}
-        onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
@@ -42,6 +42,8 @@ export const CreatorsPanelView: React.FC<CreatorsPanelViewProps> = ({
         panOnDrag={false}
         selectionOnDrag={true}
         panOnScroll={true}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
         {...options}
       >
         <Background />

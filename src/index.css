@@ -17,7 +17,7 @@ body {
 }
 
 .react-flow__handle {
-  @apply !h-6 !rounded-sm !bg-gray-400;
+  @apply !h-2.5 !w-2.5 !rounded-full !bg-gray-400;
 }
 
 .react-flow__node:has(~ .react-flow__node.selected),

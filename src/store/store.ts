@@ -42,6 +42,7 @@ const createAppState: AppStateCreator = (set, get) => {
     });
     set({ edges: updatedEdges });
   };
+
   const isValidConnection = (connection: Edge | Connection) => {
     const { source, target } = connection;
     return source !== target;
